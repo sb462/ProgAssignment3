@@ -27,29 +27,68 @@ library(sqldf)
 ?grep
 ?min
 ?sort
-z<- sort(c("c","a","b"))
+?stop
+library(stats)
+z<- nrow(c("c","a","b"))
 
 best <- function(state=character(),disease = character()){
-  outcome_by_state <- subset(data_outcome, State = "IL")
-  #summary(outcome_by_state)
+  outcome_by_state <- subset(data_outcome, State == state)
+  
+  #str(outcome_by_state)
+  if(nrow(outcome_by_state)!=0){
   disease_name <- paste(unlist(strsplit(disease, " ")),collapse =".*")
   outcome_name <- paste("^Hospital.30.Day.Death..Mortality..Rates.from",disease_name,"$",sep=".*")
-  #print(outcome_name)
   columnNames <- colnames(outcome_by_state)
-  ii<- grep(outcome_name,columnNames,ignore.case=TRUE)
+  ii<- grep(outcome_name,columnNames,ignore.case=TRUE,value = TRUE)
+  #print(ii)
+  print(length(ii))
+  if(length(ii)==1 ){
   outcome_by_state[,ii]<- as.numeric(outcome_by_state[,ii])
   minm_rate <- min(outcome_by_state[,ii],na.rm=TRUE)
-  #print(minm_rate)
   best_hospital_names <- sort(subset(outcome_by_state,outcome_by_state[,ii]==minm_rate)$Hospital.Name)
-  #hospital.name <- b
   print(best_hospital_names[1])
+  }
+
+  else{
+    stop("invalid outcome")
+  }
   
-  #outcome_by_state[,outcome_by_state$outcome_name]<- as.numeric(outcome_by_state[,outcome_by_state$outcome_name])
-  #print(min(outcome_by_state$outcome_name))
-  #best_hospital_index <- which(outcome_by_state$outcome_name)= min(outcome_by_state[,outcome_by_state$outcome_name])
-  #best_hospital_name <- outcome_by_state$Hospital.Name[best_hospital_index]
-  #print(best_hospital_name)
+  }
+  else {
+    stop("invalid state")
+  }
+}
+str(as.numeric(data_outcome[,11],rm.na))
+
+s<-order(data_outcome, as.numeric(data_outcome[,11]))
+
+rankhospital <- function(state=character(),disease = character(),rank = num()){
+  outcome_by_state <- subset(data_outcome, State == state)
   
+  #str(outcome_by_state)
+  if(nrow(outcome_by_state)!=0){
+    disease_name <- paste(unlist(strsplit(disease, " ")),collapse =".*")
+    outcome_name <- paste("^Hospital.30.Day.Death..Mortality..Rates.from",disease_name,"$",sep=".*")
+    columnNames <- colnames(outcome_by_state)
+    ii<- grep(outcome_name,columnNames,ignore.case=TRUE,value = TRUE)
+    #print(ii)
+    print(length(ii))
+    if(length(ii)==1 ){
+      outcome_by_state[,ii]<- as.numeric(outcome_by_state[,ii])
+      ranked_vector <- sort(outcome_by_state[,ii])
+      minm_rate <- min(outcome_by_state[,ii],na.rm=TRUE)
+      best_hospital_names <- sort(subset(outcome_by_state,outcome_by_state[,ii]==minm_rate)$Hospital.Name)
+      print(best_hospital_names[1])
+    }
+    
+    else{
+      stop("invalid outcome")
+    }
+    
+  }
+  else {
+    stop("invalid state")
+  }
 }
 
-best("IL", "heart attack")
+best("AK", "heart")
