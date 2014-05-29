@@ -91,6 +91,7 @@ rankhospital <- function(state=character(),disease = character(),rank ){
       nth_rate <- ranked_vector[rank]
       best_hospital_names <- sort(subset(outcome_by_state,outcome_by_state[,ii]==nth_rate)$Hospital.Name)
       print(best_hospital_names[1])
+      print(nth_rate)
       }
       else{
       print("NA")
@@ -107,4 +108,4 @@ rankhospital <- function(state=character(),disease = character(),rank ){
   }
 }
 
-rankhospital("IL", "heart attack",999)
+rankhospital("GA", "heart attack",1)
