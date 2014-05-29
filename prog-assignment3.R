@@ -62,7 +62,7 @@ str(as.numeric(data_outcome[,11],rm.na))
 
 s<-order(data_outcome, as.numeric(data_outcome[,11]))
 
-rankhospital <- function(state=character(),disease = character(),rank = num()){
+rankhospital <- function(state=character(),disease = character(),rank ){
   outcome_by_state <- subset(data_outcome, State == state)
   
   #str(outcome_by_state)
@@ -72,13 +72,29 @@ rankhospital <- function(state=character(),disease = character(),rank = num()){
     columnNames <- colnames(outcome_by_state)
     ii<- grep(outcome_name,columnNames,ignore.case=TRUE,value = TRUE)
     #print(ii)
-    print(length(ii))
+    #print(length(ii))
     if(length(ii)==1 ){
       outcome_by_state[,ii]<- as.numeric(outcome_by_state[,ii])
       ranked_vector <- sort(outcome_by_state[,ii])
-      minm_rate <- min(outcome_by_state[,ii],na.rm=TRUE)
-      best_hospital_names <- sort(subset(outcome_by_state,outcome_by_state[,ii]==minm_rate)$Hospital.Name)
+      if(rank == "best"){
+        rank <-1
+      }
+      else if (rank == "worst"){
+        rank <- length(ranked_vector)
+      }
+      else
+      {
+        rank <-rank
+      }
+      if(length(ranked_vector) >= rank)
+        {
+      nth_rate <- ranked_vector[rank]
+      best_hospital_names <- sort(subset(outcome_by_state,outcome_by_state[,ii]==nth_rate)$Hospital.Name)
       print(best_hospital_names[1])
+      }
+      else{
+      print("NA")
+      }
     }
     
     else{
@@ -91,4 +107,4 @@ rankhospital <- function(state=character(),disease = character(),rank = num()){
   }
 }
 
-best("AK", "heart")
+rankhospital("IL", "heart attack",999)
